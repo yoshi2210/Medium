@@ -36,6 +36,8 @@ html{ scroll-behavior:smooth; }
 @media (prefers-reduced-motion: reduce){
   html{ scroll-behavior:auto; }
   *, *::before, *::after{ animation:none !important; transition:none !important; }
+  .rise{ opacity:1 !important; transform:none !important; }
+  .lines .ln-i{ transform:none !important; }
 }
 
 body{
@@ -84,7 +86,10 @@ nav{
 .nav-logo{ font-weight:500; }
 .nav-logo em{ font-style:normal; color:var(--signal); }
 .nav-links{ display:flex; gap:26px; }
-.nav-links a{ color:var(--dim); transition:color .25s; }
+.nav-links a{
+  color:var(--dim); display:inline-block;
+  transition:color .25s, transform .35s cubic-bezier(.19,1,.22,1);
+}
 .nav-links a:hover{ color:var(--paper); }
 .nav-links a span{ color:var(--faint); margin-right:.4em; }
 @media(max-width:640px){ .nav-links a .lbl{ display:none; } }
@@ -144,12 +149,54 @@ h1 .dot{ color:var(--signal); }
   z-index:2;
 }
 @media(max-width:800px){ .hero-vertical{ display:none; } }
-.hero-meta{
-  position:absolute; bottom:26px; left:0; right:0; z-index:2;
-  max-width:var(--w-max); margin:0 auto; padding:0 var(--pad);
-  display:flex; justify-content:space-between;
-  font-family:var(--mono); font-size:10px; letter-spacing:.18em; color:var(--faint);
+/* ---- 全ページ共通の計器類 ---- */
+.progress{
+  position:fixed; top:0; left:0; height:1px; width:0%;
+  background:var(--signal); z-index:70; pointer-events:none;
 }
+.grain{
+  position:fixed; inset:0; z-index:90; pointer-events:none; opacity:.045;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size:260px 260px;
+}
+.telemetry{
+  position:fixed; bottom:0; left:0; right:0; z-index:40; pointer-events:none;
+  background:linear-gradient(to top, rgba(10,10,10,.9), rgba(10,10,10,0));
+}
+.telemetry-inner{
+  max-width:var(--w-max); margin:0 auto;
+  padding:26px var(--pad) 14px;
+  display:flex; justify-content:space-between; gap:20px;
+  font-family:var(--mono); font-size:9.5px; letter-spacing:.18em; color:var(--faint);
+  white-space:nowrap;
+}
+.telemetry b{ font-weight:400; color:var(--dim); }
+.telemetry .sep{ margin:0 .9em; opacity:.5; }
+@media(max-width:800px){ .tel-l, .t-xy{ display:none; } .telemetry-inner{ justify-content:flex-end; } }
+
+/* ---- カスタムカーソル(pointer:fine のみ、JSで有効化) ---- */
+html.cur-on, html.cur-on a, html.cur-on button{ cursor:none; }
+.cur-dot, .cur-ring{
+  position:fixed; left:0; top:0; z-index:100; pointer-events:none;
+  border-radius:50%; will-change:transform;
+  display:none;
+}
+html.cur-on .cur-dot, html.cur-on .cur-ring{ display:block; }
+.cur-dot{ width:5px; height:5px; background:var(--signal); }
+.cur-ring{
+  width:32px; height:32px; border:1px solid rgba(232,230,225,.3);
+  transition:width .25s ease, height .25s ease, border-color .25s ease;
+}
+html.cur-hover .cur-ring{ width:50px; height:50px; border-color:var(--signal); }
+
+/* ---- Statement: 行単位のワイプ・リビール ---- */
+.lines .ln{ display:block; overflow:hidden; }
+.lines .ln-i{
+  display:inline-block; transform:translateY(112%);
+  transition:transform 1.1s cubic-bezier(.19,1,.22,1);
+  transition-delay:calc(var(--i, 0) * .13s);
+}
+.lines.on .ln-i{ transform:none; }
 
 /* ---- ロード時 staggered reveal(一度の完璧な幕開け) ---- */
 .rise{
@@ -170,6 +217,7 @@ section{
   position:relative; z-index:2;
   max-width:var(--w-max); margin:0 auto;
   padding:clamp(90px, 14vh, 160px) var(--pad) 0;
+  scroll-margin-top:30px;
 }
 .sec-head{
   display:flex; align-items:baseline; gap:18px;
@@ -216,10 +264,10 @@ section{
   max-width:24em;
 }
 .statement p + p{ margin-top:1.6em; }
-.statement .amp{ color:var(--signal); }
-.statement-note{
+.statement p.statement-note{
   margin-top:52px; max-width:36em;
-  color:var(--dim); font-size:13.5px;
+  font-family:var(--sans-jp); font-weight:400; letter-spacing:normal;
+  color:var(--dim); font-size:13.5px; line-height:1.95;
 }
 
 /* ================================================================
@@ -358,7 +406,7 @@ section{
 footer{
   position:relative; z-index:2;
   max-width:var(--w-max); margin:0 auto;
-  padding:110px var(--pad) 34px;
+  padding:110px var(--pad) 58px;
 }
 .foot-line{
   border-top:1px solid var(--hairline);
@@ -373,6 +421,18 @@ footer{
 <body>
 
 <div class="grid-lines" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+<div class="progress" aria-hidden="true"></div>
+<div class="grain" aria-hidden="true"></div>
+<div class="cur-ring" aria-hidden="true"></div>
+<div class="cur-dot" aria-hidden="true"></div>
+<div class="telemetry" aria-hidden="true">
+  <div class="telemetry-inner">
+    <span class="tel-l">BRAINDUMPER — EST. 2026</span>
+    <span class="tel-r">
+      <b id="t-clock">--:--:--</b> JST<span class="sep">/</span>SCR <b id="t-scroll">000</b>%<span class="sep">/</span><b id="t-sec">§ INDEX</b><span class="t-xy"><span class="sep">/</span><b id="t-xy">X---- Y----</b></span>
+    </span>
+  </div>
+</div>
 
 <nav>
   <div class="nav-inner">
@@ -390,19 +450,15 @@ footer{
 <header>
   <canvas id="rain" aria-hidden="true"></canvas>
   <div class="hero-inner">
-    <p class="hero-kicker rise d1">MEDIA ARTIST&nbsp;/&nbsp;CRITIC — TOKYO</p>
+    <p class="hero-kicker rise d1" data-scr>MEDIA ARTIST&nbsp;/&nbsp;CRITIC — TOKYO</p>
     <h1 class="rise d2">BRAIN<br>DUMPER<span class="dot">.</span></h1>
-    <p class="hero-sub rise d3"><b>思考の廃棄場</b>&nbsp;&nbsp;//&nbsp;&nbsp;DUMPED THOUGHTS, STRUCTURED.</p>
+    <p class="hero-sub rise d3"><b>作品・論考・道具</b>&nbsp;&nbsp;//&nbsp;&nbsp;PERSONAL ARCHIVE</p>
     <p class="hero-statement rise d4">
-      作ることと論じることは、同じ一つの行為の表と裏である。
-      ここは、その両方が堆積していく場所。
+      メディアアートの制作と、批評テキストの執筆。
+      その記録をここに集約しています。
     </p>
   </div>
-  <p class="hero-vertical rise d5">思考の残骸を、構造へ。</p>
-  <div class="hero-meta rise d5">
-    <span>EST. 2026 — ONGOING</span>
-    <span>SCROLL ↓</span>
-  </div>
+  <p class="hero-vertical rise d5">作品と論考の記録</p>
 </header>
 
 <!-- ============================ 00 STATEMENT ============================ -->
@@ -410,19 +466,18 @@ footer{
   <div class="sec-head io">
     <span class="sec-no">00</span>
     <h2 class="sec-title">Statement</h2>
-    <span class="sec-title-jp">声明</span>
+    <span class="sec-title-jp" data-scr>声明</span>
     <span class="ghost" aria-hidden="true">00</span>
   </div>
   <div class="statement">
-    <p class="io">頭の中を、整形せずに外へ出す。<br>
-    それを構造に鍛え直す作業だけが、<br>
-    思考と呼ぶに値する。</p>
-    <p class="io">作品は沈黙する論考であり、<br>
-    論考は言語でできた作品である。<br>
-    私はその往復<span class="amp">だけ</span>をやる。</p>
+    <p class="io lines">
+      <span class="ln" style="--i:0"><span class="ln-i">データと言語を素材に、</span></span>
+      <span class="ln" style="--i:1"><span class="ln-i">インスタレーションと</span></span>
+      <span class="ln" style="--i:2"><span class="ln-i">批評テキストを制作しています。</span></span>
+    </p>
     <p class="statement-note io">
-      Braindumper は、メディアアートの制作と批評的なテキストの執筆を、分離せずに続けるための名義です。
-      展示・上演の記録は Works に、思考の本体はすべて Writing に置かれます。
+      Braindumper は、メディアアートの制作と批評テキストの執筆を、同じ場所で続けるための名義です。
+      展示・上演の記録は Works に、テキストの索引は Writing に、開発中のツールは Apps に集約されます。
     </p>
   </div>
 </section>
@@ -432,7 +487,7 @@ footer{
   <div class="sec-head io">
     <span class="sec-no">01</span>
     <h2 class="sec-title">Writing</h2>
-    <span class="sec-title-jp">論考・批評</span>
+    <span class="sec-title-jp" data-scr>論考・批評</span>
     <span class="ghost" aria-hidden="true">01</span>
   </div>
 
@@ -483,7 +538,7 @@ footer{
   <div class="sec-head io">
     <span class="sec-no">02</span>
     <h2 class="sec-title">Works</h2>
-    <span class="sec-title-jp">作品</span>
+    <span class="sec-title-jp" data-scr>作品</span>
     <span class="ghost" aria-hidden="true">02</span>
   </div>
 
@@ -520,7 +575,7 @@ footer{
       </div>
       <span class="work-id">W-02 / 2025</span>
       <h3 class="work-title">RESIDUE</h3>
-      <p class="work-desc">消去されたデータの欠損位置だけを版として刷る、ジェネラティブ・プリントの連作。欠けたものの座標が図になる。</p>
+      <p class="work-desc">消去されたデータの欠損位置を版として刷る、ジェネラティブ・プリントの連作。</p>
       <span class="work-tags">GENERATIVE / PRINT / SERIES OF 12</span>
     </article>
 
@@ -533,7 +588,7 @@ footer{
       </div>
       <span class="work-id">W-01 / 2025</span>
       <h3 class="work-title">DUMP//STREAM</h3>
-      <p class="work-desc">思考のログを整形せずリアルタイムに投射するパフォーマンス。編集される前の言語の速度を、そのまま観客に晒す。</p>
+      <p class="work-desc">入力されるテキストログを、整形せずそのままスクリーンへ投射するリアルタイム・パフォーマンス。</p>
       <span class="work-tags">PERFORMANCE / REALTIME / TEXT</span>
     </article>
   </div>
@@ -544,7 +599,7 @@ footer{
   <div class="sec-head io">
     <span class="sec-no">03</span>
     <h2 class="sec-title">Apps</h2>
-    <span class="sec-title-jp">道具</span>
+    <span class="sec-title-jp" data-scr>道具</span>
     <span class="ghost" aria-hidden="true">03</span>
   </div>
 
@@ -557,10 +612,10 @@ footer{
     <article class="app io">
       <span class="app-status"><i></i>CONCEPT</span>
       <h3 class="app-name">Reader Zero</h3>
-      <p class="app-desc">黒基調・組版優先の長文リーダー。読むことに周辺光を許さない。</p>
+      <p class="app-desc">黒基調・組版優先の長文リーダー。設計中。</p>
     </article>
   </div>
-  <p class="apps-note io">TOOLS WILL BE DEPOSITED HERE AS THEY SURVIVE.</p>
+  <p class="apps-note io">MORE TOOLS IN PREPARATION.</p>
 </section>
 
 <!-- ============================ 04 ABOUT ============================ -->
@@ -568,14 +623,14 @@ footer{
   <div class="sec-head io">
     <span class="sec-no">04</span>
     <h2 class="sec-title">About</h2>
-    <span class="sec-title-jp">経歴・接続</span>
+    <span class="sec-title-jp" data-scr>経歴・接続</span>
     <span class="ghost" aria-hidden="true">04</span>
   </div>
 
   <div class="about">
     <div class="bio io">
       <p>Braindumper。メディアアーティスト、論客。データと言語を素材に、インスタレーション、パフォーマンス、そして批評的テキストを制作する。</p>
-      <p>関心の中心は「整形される前の思考」。頭の中の未編集の状態をいかに外化し、いかに構造へ鍛え直すか — その工程自体を作品と論考の両方で扱う。テキストは note / Zenn / Medium に、作品と道具はこの場所に堆積していく。</p>
+      <p>テキストは note / Zenn / Medium で公開し、その索引を本ページの Writing に置いている。作品の記録と開発中のツールも、順次ここに追加していく。このサイト自体もフレームワークやビルドを使わない単一のHTMLファイルとして手書きで実装している。</p>
     </div>
     <ul class="channels io">
       <li><a href="#" target="_blank" rel="noopener">NOTE</a></li>
@@ -592,8 +647,8 @@ footer{
   <div class="foot-line">
     <span><b>BRAINDUMPER</b> © 2026</span>
     <span>35.6762°N 139.6503°E</span>
-    <span>SINGLE FILE / NO BUILD</span>
-    <span>DUMPED, THEN STRUCTURED.</span>
+    <span>SINGLE FILE / ZERO DEPENDENCIES</span>
+    <span>HAND-WRITTEN HTML · CSS · JS</span>
   </div>
 </footer>
 
@@ -625,16 +680,28 @@ footer{
   addEventListener('resize', size);
   if(document.fonts && document.fonts.ready) document.fonts.ready.then(size);
 
+  // ポインタ近傍のグリフに照明が当たる
+  let mx = -1e4, my = -1e4;
+  c.parentElement.addEventListener('pointermove', e => {
+    const r = c.getBoundingClientRect();
+    mx = e.clientX - r.left; my = e.clientY - r.top;
+  });
+  c.parentElement.addEventListener('pointerleave', () => { mx = my = -1e4; });
+
   function frame(){
     x.fillStyle = 'rgba(10,10,10,0.14)';
     x.fillRect(0,0,W,H);
     x.font = fs + 'px "IBM Plex Mono", monospace';
     for(let i=0; i<cols; i++){
       const ch = CHARS[Math.random()*CHARS.length|0];
-      // ごく稀にだけ信号の赤を灯す
-      x.fillStyle = Math.random() < 0.004 ? 'rgba(255,45,31,0.5)' : 'rgba(232,230,225,0.085)';
-      x.fillText(ch, i*fs*1.6, drops[i]*fs);
-      drops[i] = drops[i]*fs > H && Math.random() > .975 ? 0 : drops[i] + .35;
+      const gx = i*fs*1.6, gy = drops[i]*fs;
+      const d = Math.hypot(gx - mx, gy - my);
+      // ごく稀にだけ信号の赤を灯す。ポインタの近くは照明が当たる
+      if(d < 40)       x.fillStyle = 'rgba(255,45,31,0.6)';
+      else if(d < 130) x.fillStyle = `rgba(232,230,225,${(0.085 + 0.3*(1 - d/130)).toFixed(3)})`;
+      else x.fillStyle = Math.random() < 0.004 ? 'rgba(255,45,31,0.5)' : 'rgba(232,230,225,0.085)';
+      x.fillText(ch, gx, gy);
+      drops[i] = gy > H && Math.random() > .975 ? 0 : drops[i] + .35;
     }
   }
   if(reduced){
@@ -691,6 +758,182 @@ footer{
   }, { threshold: 0.12, rootMargin: '0px 0px -6% 0px' });
   document.querySelectorAll('.io').forEach(el => io.observe(el));
 })();
+
+/* ================================================================
+   スクランブル解読 — モノスペース(機械の声)だけが揺らぐ
+================================================================ */
+const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+function scrambleEl(el, dur){
+  if(REDUCED || !el || el.dataset.busy) return;
+  const orig = el.textContent;
+  const SET = '01<>/*+-=#アイウエオカキクケコサシスセソ';
+  const n = orig.length, t0 = performance.now();
+  el.dataset.busy = '1';
+  (function tick(t){
+    const p = Math.min(1, (t - t0) / (dur || 700));
+    const k = Math.floor(p * n);
+    let s = orig.slice(0, k);
+    for(let i = k; i < n; i++) s += /\s/.test(orig[i]) ? orig[i] : SET[Math.random()*SET.length|0];
+    el.textContent = s;
+    if(p < 1) requestAnimationFrame(tick);
+    else { el.textContent = orig; delete el.dataset.busy; }
+  })(t0);
+}
+
+(function(){
+  // 出現時に一度だけ解読される
+  const io = new IntersectionObserver(es => {
+    es.forEach(e => { if(e.isIntersecting){ scrambleEl(e.target, 900); io.unobserve(e.target); } });
+  }, { threshold: 0.5 });
+  document.querySelectorAll('[data-scr]').forEach(el => io.observe(el));
+
+  // ホバーで再解読(ナビ・索引・接続先)
+  document.querySelectorAll('.nav-links a').forEach(a => {
+    const lbl = a.querySelector('.lbl');
+    if(lbl) a.addEventListener('mouseenter', () => scrambleEl(lbl, 450));
+  });
+  document.querySelectorAll('.index a').forEach(a => {
+    const v = a.querySelector('.venue');
+    if(v) a.addEventListener('mouseenter', () => scrambleEl(v, 450));
+  });
+  document.querySelectorAll('.channels a').forEach(a => {
+    a.addEventListener('mouseenter', () => scrambleEl(a, 450));
+  });
+})();
+
+/* ================================================================
+   テレメトリ — JST時計 / スクロール% / 現在セクション / 座標
+================================================================ */
+(function(){
+  const clock = document.getElementById('t-clock');
+  const scr   = document.getElementById('t-scroll');
+  const sec   = document.getElementById('t-sec');
+  const xy    = document.getElementById('t-xy');
+  const bar   = document.querySelector('.progress');
+
+  const fmt = new Intl.DateTimeFormat('en-GB', { timeZone:'Asia/Tokyo', hour12:false, hour:'2-digit', minute:'2-digit', second:'2-digit' });
+  function tickClock(){ clock.textContent = fmt.format(new Date()); }
+  tickClock(); setInterval(tickClock, 1000);
+
+  let pend = false;
+  function onScroll(){
+    if(pend) return; pend = true;
+    requestAnimationFrame(() => {
+      const max = document.documentElement.scrollHeight - innerHeight;
+      const p = max > 0 ? Math.min(100, Math.round(scrollY / max * 100)) : 0;
+      scr.textContent = String(p).padStart(3, '0');
+      bar.style.width = p + '%';
+      pend = false;
+    });
+  }
+  addEventListener('scroll', onScroll, { passive:true }); onScroll();
+
+  const NAMES = { statement:'§00 STATEMENT', writing:'§01 WRITING', works:'§02 WORKS', apps:'§03 APPS', about:'§04 ABOUT' };
+  const io = new IntersectionObserver(es => {
+    es.forEach(e => {
+      if(e.isIntersecting){
+        const name = NAMES[e.target.id] || '§ INDEX';
+        if(sec.textContent !== name){ sec.textContent = name; scrambleEl(sec, 400); }
+      }
+    });
+  }, { rootMargin:'-40% 0px -55% 0px' });
+  document.querySelectorAll('section[id]').forEach(s => io.observe(s));
+
+  if(xy && matchMedia('(pointer:fine)').matches){
+    let px = 0, py = 0, pendXY = false;
+    addEventListener('pointermove', e => {
+      px = e.clientX; py = e.clientY;
+      if(pendXY) return; pendXY = true;
+      requestAnimationFrame(() => {
+        xy.textContent = 'X' + String(Math.round(px)).padStart(4,'0') + ' Y' + String(Math.round(py)).padStart(4,'0');
+        pendXY = false;
+      });
+    }, { passive:true });
+  }
+})();
+
+/* ================================================================
+   カスタムカーソル — 照準。リンク上ではリングが開く
+================================================================ */
+(function(){
+  if(REDUCED || !matchMedia('(pointer:fine)').matches) return;
+  const root = document.documentElement;
+  root.classList.add('cur-on');
+  const dot = document.querySelector('.cur-dot');
+  const ring = document.querySelector('.cur-ring');
+  let tx = innerWidth/2, ty = innerHeight/2, rx = tx, ry = ty;
+
+  addEventListener('pointermove', e => {
+    tx = e.clientX; ty = e.clientY;
+    dot.style.transform = `translate(${tx}px,${ty}px) translate(-50%,-50%)`;
+  }, { passive:true });
+
+  (function loop(){
+    rx += (tx - rx) * .16; ry += (ty - ry) * .16;
+    ring.style.transform = `translate(${rx}px,${ry}px) translate(-50%,-50%)`;
+    requestAnimationFrame(loop);
+  })();
+
+  document.addEventListener('mouseover', e => {
+    root.classList.toggle('cur-hover', !!e.target.closest('a, .work, .app'));
+  });
+})();
+
+/* ================================================================
+   ナビのマグネティック・ホバー
+================================================================ */
+(function(){
+  if(REDUCED || !matchMedia('(pointer:fine)').matches) return;
+  document.querySelectorAll('.nav-links a').forEach(a => {
+    a.addEventListener('pointermove', e => {
+      const r = a.getBoundingClientRect();
+      const dx = (e.clientX - (r.left + r.width/2)) / r.width;
+      const dy = (e.clientY - (r.top + r.height/2)) / r.height;
+      a.style.transform = `translate(${(dx*8).toFixed(1)}px, ${(dy*5).toFixed(1)}px)`;
+    });
+    a.addEventListener('pointerleave', () => { a.style.transform = ''; });
+  });
+})();
+
+/* ================================================================
+   Works — 展示は生きている(可視中のみ低頻度で描き換え)
+================================================================ */
+(function(){
+  if(REDUCED) return;
+  const worksSec = document.getElementById('works');
+  const dotEls = () => document.querySelectorAll('#dots circle');
+  const glyphEls = () => document.querySelectorAll('#glyphs text');
+  const WORDS = ['dump','void','0x1F','rem','::','//','>>','err','mem','---','tx','&'];
+  let timer = null;
+
+  function tick(){
+    const ds = dotEls(), gs = glyphEls();
+    for(let k=0; k<6; k++){
+      const d = ds[Math.random()*ds.length|0];
+      if(d) d.setAttribute('opacity', (0.1 + Math.random()*0.65).toFixed(2));
+    }
+    for(let k=0; k<4; k++){
+      const g = gs[Math.random()*gs.length|0];
+      if(g) g.textContent = WORDS[Math.random()*WORDS.length|0];
+    }
+  }
+  new IntersectionObserver(es => {
+    es.forEach(e => {
+      if(e.isIntersecting && !timer) timer = setInterval(tick, 160);
+      else if(!e.isIntersecting && timer){ clearInterval(timer); timer = null; }
+    });
+  }, { threshold: 0.1 }).observe(worksSec);
+})();
+
+/* ================================================================
+   view-source した人への署名
+================================================================ */
+console.log(
+  '%cBRAINDUMPER_%c\nhand-written html / css / js — no framework, no build, zero dependencies.',
+  'font-family:monospace;font-size:18px;font-weight:bold;color:#ff2d1f',
+  'font-family:monospace;color:#8f8c84'
+);
 </script>
 </body>
 </html>
