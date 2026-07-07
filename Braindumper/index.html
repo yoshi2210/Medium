@@ -17,8 +17,8 @@
   --ink:        #0a0a0a;   /* 展示空間の黒 */
   --ink-2:      #101010;   /* 一段浮いた黒 */
   --paper:      #e8e6e1;   /* 沈めたオフホワイト */
-  --dim:        #8f8c84;   /* 注釈・メタデータ */
-  --faint:      #55534e;   /* ゴースト */
+  --dim:        #a6a39b;   /* 注釈・メタデータ */
+  --faint:      #6e6b63;   /* ゴースト(装飾専用) */
   --hairline:   rgba(232,230,225,.13);
   --signal:     #ff2d1f;   /* 警告灯の赤 — 使用は厳格に制限 */
 
@@ -61,7 +61,7 @@ a{ color:inherit; text-decoration:none; }
   max-width:var(--w-max); margin:0 auto;
   padding:0 var(--pad);
 }
-.grid-lines span{ width:1px; background:var(--hairline); opacity:.5; }
+.grid-lines span{ width:1px; background:var(--hairline); opacity:.25; }
 .grid-lines span:nth-child(2),
 .grid-lines span:nth-child(3){ display:none; }
 @media(min-width:800px){
@@ -109,7 +109,7 @@ header{
   padding:0 var(--pad);
 }
 .hero-kicker{
-  font-family:var(--mono); font-size:11px; letter-spacing:.3em;
+  font-family:var(--mono); font-size:11.5px; letter-spacing:.22em;
   color:var(--dim);
   display:flex; align-items:center; gap:14px;
 }
@@ -131,8 +131,8 @@ h1 .dot{ color:var(--signal); }
 .hero-sub b{ color:var(--paper); font-weight:500; }
 .hero-statement{
   margin-top:44px; max-width:34em;
-  font-family:var(--serif-jp); font-weight:500;
-  font-size:clamp(15px, 1.8vw, 19px); line-height:2.1;
+  font-family:var(--serif-jp); font-weight:700;
+  font-size:clamp(16px, 1.8vw, 19px); line-height:2.1;
   color:var(--paper);
 }
 /* 縦書き — 建築としての一句 */
@@ -142,7 +142,7 @@ h1 .dot{ color:var(--signal); }
   writing-mode:vertical-rl;
   text-orientation:upright;
   font-family:var(--serif-jp); font-weight:700;
-  font-size:clamp(13px, 1.5vw, 17px); letter-spacing:.42em;
+  font-size:clamp(13px, 1.5vw, 17px); letter-spacing:.3em;
   color:var(--faint);
   border-right:1px solid var(--hairline);
   padding-right:18px;
@@ -155,7 +155,7 @@ h1 .dot{ color:var(--signal); }
   background:var(--signal); z-index:70; pointer-events:none;
 }
 .grain{
-  position:fixed; inset:0; z-index:90; pointer-events:none; opacity:.045;
+  position:fixed; inset:0; z-index:1; pointer-events:none; opacity:.03;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   background-size:260px 260px;
 }
@@ -167,10 +167,10 @@ h1 .dot{ color:var(--signal); }
   max-width:var(--w-max); margin:0 auto;
   padding:26px var(--pad) 14px;
   display:flex; justify-content:space-between; gap:20px;
-  font-family:var(--mono); font-size:9.5px; letter-spacing:.18em; color:var(--faint);
+  font-family:var(--mono); font-size:10.5px; letter-spacing:.12em; color:var(--dim);
   white-space:nowrap;
 }
-.telemetry b{ font-weight:400; color:var(--dim); }
+.telemetry b{ font-weight:400; color:var(--paper); }
 .telemetry .sep{ margin:0 .9em; opacity:.5; }
 @media(max-width:800px){ .tel-l, .t-xy{ display:none; } .telemetry-inner{ justify-content:flex-end; } }
 
@@ -184,10 +184,11 @@ html.cur-on, html.cur-on a, html.cur-on button{ cursor:none; }
 html.cur-on .cur-dot, html.cur-on .cur-ring{ display:block; }
 .cur-dot{ width:5px; height:5px; background:var(--signal); }
 .cur-ring{
-  width:32px; height:32px; border:1px solid rgba(232,230,225,.3);
+  width:26px; height:26px; border:1px solid rgba(232,230,225,.45);
+  mix-blend-mode:difference;
   transition:width .25s ease, height .25s ease, border-color .25s ease;
 }
-html.cur-hover .cur-ring{ width:50px; height:50px; border-color:var(--signal); }
+html.cur-hover .cur-ring{ width:44px; height:44px; border-color:var(--signal); }
 
 /* ---- Statement: 行単位のワイプ・リビール ---- */
 .lines .ln{ display:block; overflow:hidden; }
@@ -267,7 +268,7 @@ section{
 .statement p.statement-note{
   margin-top:52px; max-width:36em;
   font-family:var(--sans-jp); font-weight:400; letter-spacing:normal;
-  color:var(--dim); font-size:13.5px; line-height:1.95;
+  color:var(--dim); font-size:14px; line-height:1.95;
 }
 
 /* ================================================================
@@ -295,7 +296,7 @@ section{
   transition:color .3s;
 }
 .idx-meta{
-  font-family:var(--mono); font-size:10px; letter-spacing:.16em; color:var(--dim);
+  font-family:var(--mono); font-size:10.5px; letter-spacing:.12em; color:var(--dim);
   text-align:right; white-space:nowrap;
 }
 .idx-meta .venue{ color:var(--faint); display:block; }
@@ -336,12 +337,12 @@ section{
 }
 .work:hover .work-visual{ filter:brightness(1.12); }
 .work-visual svg{ width:100%; height:100%; display:block; }
-.work-id{ font-family:var(--mono); font-size:10px; letter-spacing:.2em; color:var(--faint); }
+.work-id{ font-family:var(--mono); font-size:10.5px; letter-spacing:.16em; color:var(--faint); }
 .work-title{
   font-family:var(--serif-en); font-weight:600; font-size:21px; letter-spacing:.01em;
 }
-.work-desc{ color:var(--dim); font-size:13px; line-height:1.85; }
-.work-tags{ font-family:var(--mono); font-size:10px; letter-spacing:.14em; color:var(--faint); margin-top:auto; }
+.work-desc{ color:var(--dim); font-size:14px; line-height:1.9; }
+.work-tags{ font-family:var(--mono); font-size:10.5px; letter-spacing:.12em; color:var(--faint); margin-top:auto; }
 
 /* scanline アニメ(SIGNAL DECAY) */
 .scan{ animation:scan 4.5s linear infinite; }
@@ -360,7 +361,7 @@ section{
 }
 .app:hover{ background:var(--ink-2); }
 .app-status{
-  font-family:var(--mono); font-size:10px; letter-spacing:.22em;
+  font-family:var(--mono); font-size:10.5px; letter-spacing:.16em;
   display:flex; align-items:center; gap:10px; color:var(--dim);
 }
 .app-status i{
@@ -371,10 +372,10 @@ section{
 .app-status.dev i{ background:var(--signal); animation:blink 2.2s ease-in-out infinite; }
 @keyframes blink{ 0%,100%{opacity:1;} 50%{opacity:.25;} }
 .app-name{ font-family:var(--serif-en); font-weight:600; font-size:22px; }
-.app-desc{ color:var(--dim); font-size:13px; }
+.app-desc{ color:var(--dim); font-size:14px; }
 .apps-note{
-  margin-top:20px; font-family:var(--mono); font-size:10px;
-  letter-spacing:.18em; color:var(--faint);
+  margin-top:20px; font-family:var(--mono); font-size:10.5px;
+  letter-spacing:.14em; color:var(--faint);
 }
 
 /* ================================================================
@@ -383,8 +384,9 @@ section{
 .about{ display:grid; gap:48px; }
 @media(min-width:880px){ .about{ grid-template-columns:1.3fr 1fr; } }
 .bio p{
-  font-family:var(--serif-jp); font-weight:500;
-  font-size:15.5px; line-height:2.15; letter-spacing:.03em;
+  font-family:var(--sans-jp); font-weight:400;
+  font-size:15px; line-height:2.05;
+  color:var(--paper);
   max-width:36em;
 }
 .bio p + p{ margin-top:1.4em; }
@@ -413,7 +415,7 @@ footer{
   padding-top:22px;
   display:flex; flex-wrap:wrap; gap:14px 34px;
   justify-content:space-between;
-  font-family:var(--mono); font-size:10px; letter-spacing:.18em; color:var(--faint);
+  font-family:var(--mono); font-size:10.5px; letter-spacing:.14em; color:var(--faint);
 }
 .foot-line b{ color:var(--dim); font-weight:400; }
 </style>
@@ -764,21 +766,29 @@ footer{
 ================================================================ */
 const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-function scrambleEl(el, dur){
-  if(REDUCED || !el || el.dataset.busy) return;
-  const orig = el.textContent;
+// 指定テキストへ解読しながら遷移する。後から来た呼び出しが常に勝つ(世代トークン)
+function scrambleTo(el, text, dur){
+  if(!el) return;
+  const g = el._g = (el._g || 0) + 1;
+  if(REDUCED){ el.textContent = text; return; }
   const SET = '01<>/*+-=#アイウエオカキクケコサシスセソ';
-  const n = orig.length, t0 = performance.now();
-  el.dataset.busy = '1';
+  const n = text.length, t0 = performance.now();
+  el._busy = true;
   (function tick(t){
+    if(el._g !== g) return; // 新しい解読に割り込まれた
     const p = Math.min(1, (t - t0) / (dur || 700));
     const k = Math.floor(p * n);
-    let s = orig.slice(0, k);
-    for(let i = k; i < n; i++) s += /\s/.test(orig[i]) ? orig[i] : SET[Math.random()*SET.length|0];
+    let s = text.slice(0, k);
+    for(let i = k; i < n; i++) s += /\s/.test(text[i]) ? text[i] : SET[Math.random()*SET.length|0];
     el.textContent = s;
     if(p < 1) requestAnimationFrame(tick);
-    else { el.textContent = orig; delete el.dataset.busy; }
+    else { el.textContent = text; el._busy = false; }
   })(t0);
+}
+// 静止中の要素を自分自身のテキストへ再解読する(ホバー・出現用)
+function scrambleEl(el, dur){
+  if(!el || el._busy) return;
+  scrambleTo(el, el.textContent, dur);
 }
 
 (function(){
@@ -834,7 +844,7 @@ function scrambleEl(el, dur){
     es.forEach(e => {
       if(e.isIntersecting){
         const name = NAMES[e.target.id] || '§ INDEX';
-        if(sec.textContent !== name){ sec.textContent = name; scrambleEl(sec, 400); }
+        if(sec.dataset.cur !== name){ sec.dataset.cur = name; scrambleTo(sec, name, 400); }
       }
     });
   }, { rootMargin:'-40% 0px -55% 0px' });
