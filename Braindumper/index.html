@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BRAINDUMPER — Media Artist / Critic</title>
+<meta name="description" content="Braindumper — メディアアーティスト、論客。思考の残骸を構造へ。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,200;0,9..144,300;0,9..144,600;0,9..144,900;1,9..144,300&family=IBM+Plex+Mono:wght@400;500&family=Shippori+Mincho:wght@500;700;800&family=Zen+Kaku+Gothic+New:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ================================================================
+   BRAINDUMPER — design tokens
+   暗闇の美術館 × 組版された論考
+================================================================ */
+:root{
+  --ink:        #0a0a0a;   /* 展示空間の黒 */
+  --ink-2:      #101010;   /* 一段浮いた黒 */
+  --paper:      #e8e6e1;   /* 沈めたオフホワイト */
+  --dim:        #8f8c84;   /* 注釈・メタデータ */
+  --faint:      #55534e;   /* ゴースト */
+  --hairline:   rgba(232,230,225,.13);
+  --signal:     #ff2d1f;   /* 警告灯の赤 — 使用は厳格に制限 */
+
+  --serif-jp:   "Shippori Mincho", "Hiragino Mincho ProN", serif;
+  --serif-en:   "Fraunces", Georgia, serif;
+  --mono:       "IBM Plex Mono", "Courier New", monospace;
+  --sans-jp:    "Zen Kaku Gothic New", "Hiragino Kaku Gothic ProN", sans-serif;
+
+  --w-max:      1200px;
+  --pad:        clamp(20px, 5vw, 72px);
+}
+
+*{ margin:0; padding:0; box-sizing:border-box; }
+html{ scroll-behavior:smooth; }
+@media (prefers-reduced-motion: reduce){
+  html{ scroll-behavior:auto; }
+  *, *::before, *::after{ animation:none !important; transition:none !important; }
+}
+
+body{
+  background:var(--ink);
+  color:var(--paper);
+  font-family:var(--sans-jp);
+  font-size:15px;
+  line-height:1.9;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+
+::selection{ background:var(--signal); color:var(--ink); }
+
+a{ color:inherit; text-decoration:none; }
+
+/* ---- 全体を貫くヘアライン・グリッド(展示ケースの精密さ) ---- */
+.grid-lines{
+  position:fixed; inset:0; z-index:0; pointer-events:none;
+  display:flex; justify-content:space-between;
+  max-width:var(--w-max); margin:0 auto;
+  padding:0 var(--pad);
+}
+.grid-lines span{ width:1px; background:var(--hairline); opacity:.5; }
+.grid-lines span:nth-child(2),
+.grid-lines span:nth-child(3){ display:none; }
+@media(min-width:800px){
+  .grid-lines span:nth-child(2),
+  .grid-lines span:nth-child(3){ display:block; }
+}
+
+/* ================================================================
+   NAV
+================================================================ */
+nav{
+  position:fixed; top:0; left:0; right:0; z-index:50;
+  background:linear-gradient(to bottom, rgba(10,10,10,.92), rgba(10,10,10,0));
+  backdrop-filter:blur(2px);
+}
+.nav-inner{
+  max-width:var(--w-max); margin:0 auto;
+  padding:20px var(--pad);
+  display:flex; justify-content:space-between; align-items:baseline;
+  font-family:var(--mono); font-size:11px; letter-spacing:.14em;
+}
+.nav-logo{ font-weight:500; }
+.nav-logo em{ font-style:normal; color:var(--signal); }
+.nav-links{ display:flex; gap:26px; }
+.nav-links a{ color:var(--dim); transition:color .25s; }
+.nav-links a:hover{ color:var(--paper); }
+.nav-links a span{ color:var(--faint); margin-right:.4em; }
+@media(max-width:640px){ .nav-links a .lbl{ display:none; } }
+
+/* ================================================================
+   HERO
+================================================================ */
+header{
+  position:relative; min-height:100svh;
+  display:flex; align-items:center;
+  overflow:hidden;
+}
+#rain{ position:absolute; inset:0; width:100%; height:100%; z-index:1; opacity:.5; }
+.hero-inner{
+  position:relative; z-index:2;
+  max-width:var(--w-max); margin:0 auto; width:100%;
+  padding:0 var(--pad);
+}
+.hero-kicker{
+  font-family:var(--mono); font-size:11px; letter-spacing:.3em;
+  color:var(--dim);
+  display:flex; align-items:center; gap:14px;
+}
+.hero-kicker::before{
+  content:""; width:34px; height:1px; background:var(--signal);
+}
+h1{
+  font-family:var(--serif-en);
+  font-weight:900; font-optical-sizing:auto;
+  font-size:clamp(52px, 12.5vw, 168px);
+  line-height:.92; letter-spacing:-.02em;
+  margin:.18em 0 .12em;
+}
+h1 .dot{ color:var(--signal); }
+.hero-sub{
+  font-family:var(--mono); font-size:12px; letter-spacing:.22em;
+  color:var(--dim);
+}
+.hero-sub b{ color:var(--paper); font-weight:500; }
+.hero-statement{
+  margin-top:44px; max-width:34em;
+  font-family:var(--serif-jp); font-weight:500;
+  font-size:clamp(15px, 1.8vw, 19px); line-height:2.1;
+  color:var(--paper);
+}
+/* 縦書き — 建築としての一句 */
+.hero-vertical{
+  position:absolute; right:calc(var(--pad) * .55); top:50%;
+  transform:translateY(-50%);
+  writing-mode:vertical-rl;
+  text-orientation:upright;
+  font-family:var(--serif-jp); font-weight:700;
+  font-size:clamp(13px, 1.5vw, 17px); letter-spacing:.42em;
+  color:var(--faint);
+  border-right:1px solid var(--hairline);
+  padding-right:18px;
+  z-index:2;
+}
+@media(max-width:800px){ .hero-vertical{ display:none; } }
+.hero-meta{
+  position:absolute; bottom:26px; left:0; right:0; z-index:2;
+  max-width:var(--w-max); margin:0 auto; padding:0 var(--pad);
+  display:flex; justify-content:space-between;
+  font-family:var(--mono); font-size:10px; letter-spacing:.18em; color:var(--faint);
+}
+
+/* ---- ロード時 staggered reveal(一度の完璧な幕開け) ---- */
+.rise{
+  opacity:0; transform:translateY(26px);
+  animation:rise 1.1s cubic-bezier(.19,1,.22,1) forwards;
+}
+.rise.d1{ animation-delay:.15s; }
+.rise.d2{ animation-delay:.35s; }
+.rise.d3{ animation-delay:.6s; }
+.rise.d4{ animation-delay:.85s; }
+.rise.d5{ animation-delay:1.1s; }
+@keyframes rise{ to{ opacity:1; transform:none; } }
+
+/* ================================================================
+   SECTIONS 共通 — 番号の刻印とゴースト数字
+================================================================ */
+section{
+  position:relative; z-index:2;
+  max-width:var(--w-max); margin:0 auto;
+  padding:clamp(90px, 14vh, 160px) var(--pad) 0;
+}
+.sec-head{
+  display:flex; align-items:baseline; gap:18px;
+  border-bottom:1px solid var(--hairline);
+  padding-bottom:18px; margin-bottom:0;
+  position:relative;
+}
+.sec-no{
+  font-family:var(--mono); font-size:11px; letter-spacing:.2em;
+  color:var(--signal);
+}
+.sec-title{
+  font-family:var(--serif-en); font-weight:600;
+  font-size:clamp(26px, 4vw, 44px); letter-spacing:-.01em;
+}
+.sec-title-jp{
+  font-family:var(--mono); font-size:11px; letter-spacing:.3em;
+  color:var(--dim); margin-left:auto;
+}
+.ghost{
+  position:absolute; right:-.05em; top:-1.4em;
+  font-family:var(--mono); font-weight:400;
+  font-size:clamp(90px, 16vw, 210px);
+  color:transparent;
+  -webkit-text-stroke:1px rgba(232,230,225,.06);
+  pointer-events:none; user-select:none;
+  line-height:1;
+}
+
+/* スクロール出現 */
+.io{ opacity:0; transform:translateY(22px); transition:opacity .9s ease, transform .9s cubic-bezier(.19,1,.22,1); }
+.io.on{ opacity:1; transform:none; }
+
+/* ================================================================
+   00 STATEMENT
+================================================================ */
+.statement{
+  padding-top:clamp(48px, 8vh, 90px);
+}
+.statement p{
+  font-family:var(--serif-jp); font-weight:700;
+  font-size:clamp(21px, 3.4vw, 34px);
+  line-height:2.05; letter-spacing:.04em;
+  max-width:24em;
+}
+.statement p + p{ margin-top:1.6em; }
+.statement .amp{ color:var(--signal); }
+.statement-note{
+  margin-top:52px; max-width:36em;
+  color:var(--dim); font-size:13.5px;
+}
+
+/* ================================================================
+   01 WRITING — 番号付きインデックス
+================================================================ */
+.index{ list-style:none; }
+.index li{ border-bottom:1px solid var(--hairline); }
+.index a{
+  display:grid; align-items:baseline;
+  grid-template-columns:3.4em 7.5em 1fr auto;
+  gap:18px;
+  padding:26px 6px;
+  transition:background .3s, padding-left .3s;
+}
+.index a:hover{ background:var(--ink-2); padding-left:16px; }
+.idx-no{
+  font-family:var(--mono); font-size:11px; letter-spacing:.15em; color:var(--faint);
+  transition:color .3s;
+}
+.index a:hover .idx-no{ color:var(--signal); }
+.idx-date{ font-family:var(--mono); font-size:11px; letter-spacing:.12em; color:var(--dim); }
+.idx-title{
+  font-family:var(--serif-jp); font-weight:700;
+  font-size:clamp(16px, 2vw, 20px); line-height:1.7;
+  transition:color .3s;
+}
+.idx-meta{
+  font-family:var(--mono); font-size:10px; letter-spacing:.16em; color:var(--dim);
+  text-align:right; white-space:nowrap;
+}
+.idx-meta .venue{ color:var(--faint); display:block; }
+@media(max-width:720px){
+  .index a{ grid-template-columns:3.2em 1fr; row-gap:6px; padding:22px 2px; }
+  .idx-date{ order:3; grid-column:2; }
+  .idx-meta{ text-align:left; grid-column:2; order:4; }
+  .idx-meta .venue{ display:inline; margin-left:1em; }
+}
+.index-foot{
+  display:flex; justify-content:space-between; align-items:baseline;
+  padding:22px 6px 0;
+  font-family:var(--mono); font-size:11px; letter-spacing:.2em; color:var(--dim);
+}
+.index-foot a{ border-bottom:1px solid var(--faint); padding-bottom:2px; transition:color .25s, border-color .25s; }
+.index-foot a:hover{ color:var(--signal); border-color:var(--signal); }
+
+/* ================================================================
+   02 WORKS — ジェネラティブ・モノクロ
+================================================================ */
+.works{
+  display:grid; gap:1px; background:var(--hairline);
+  border:1px solid var(--hairline);
+  margin-top:0;
+}
+@media(min-width:800px){ .works{ grid-template-columns:repeat(3, 1fr); } }
+.work{
+  background:var(--ink); padding:26px 24px 30px;
+  display:flex; flex-direction:column; gap:20px;
+  transition:background .35s;
+}
+.work:hover{ background:var(--ink-2); }
+.work-visual{
+  aspect-ratio:4/3; overflow:hidden; position:relative;
+  background:#060606;
+  filter:brightness(.92);
+  transition:filter .4s;
+}
+.work:hover .work-visual{ filter:brightness(1.12); }
+.work-visual svg{ width:100%; height:100%; display:block; }
+.work-id{ font-family:var(--mono); font-size:10px; letter-spacing:.2em; color:var(--faint); }
+.work-title{
+  font-family:var(--serif-en); font-weight:600; font-size:21px; letter-spacing:.01em;
+}
+.work-desc{ color:var(--dim); font-size:13px; line-height:1.85; }
+.work-tags{ font-family:var(--mono); font-size:10px; letter-spacing:.14em; color:var(--faint); margin-top:auto; }
+
+/* scanline アニメ(SIGNAL DECAY) */
+.scan{ animation:scan 4.5s linear infinite; }
+@keyframes scan{ from{ transform:translateY(-100%);} to{ transform:translateY(400%);} }
+
+/* ================================================================
+   03 APPS — 将来の置き場
+================================================================ */
+.apps{ display:grid; gap:1px; background:var(--hairline); border:1px solid var(--hairline); }
+@media(min-width:720px){ .apps{ grid-template-columns:repeat(2,1fr); } }
+.app{
+  background:var(--ink); padding:30px 26px;
+  display:flex; flex-direction:column; gap:14px;
+  min-height:190px;
+  transition:background .35s;
+}
+.app:hover{ background:var(--ink-2); }
+.app-status{
+  font-family:var(--mono); font-size:10px; letter-spacing:.22em;
+  display:flex; align-items:center; gap:10px; color:var(--dim);
+}
+.app-status i{
+  width:7px; height:7px; border-radius:50%;
+  background:var(--faint);
+  font-style:normal;
+}
+.app-status.dev i{ background:var(--signal); animation:blink 2.2s ease-in-out infinite; }
+@keyframes blink{ 0%,100%{opacity:1;} 50%{opacity:.25;} }
+.app-name{ font-family:var(--serif-en); font-weight:600; font-size:22px; }
+.app-desc{ color:var(--dim); font-size:13px; }
+.apps-note{
+  margin-top:20px; font-family:var(--mono); font-size:10px;
+  letter-spacing:.18em; color:var(--faint);
+}
+
+/* ================================================================
+   04 ABOUT / CONTACT
+================================================================ */
+.about{ display:grid; gap:48px; }
+@media(min-width:880px){ .about{ grid-template-columns:1.3fr 1fr; } }
+.bio p{
+  font-family:var(--serif-jp); font-weight:500;
+  font-size:15.5px; line-height:2.15; letter-spacing:.03em;
+  max-width:36em;
+}
+.bio p + p{ margin-top:1.4em; }
+.channels{ list-style:none; align-self:start; }
+.channels li{ border-bottom:1px solid var(--hairline); }
+.channels a{
+  display:flex; justify-content:space-between; align-items:baseline;
+  padding:16px 4px;
+  font-family:var(--mono); font-size:12px; letter-spacing:.16em;
+  color:var(--dim); transition:color .25s, padding-left .25s;
+}
+.channels a:hover{ color:var(--paper); padding-left:12px; }
+.channels a::after{ content:"↗"; color:var(--faint); }
+.channels a:hover::after{ color:var(--signal); }
+
+/* ================================================================
+   FOOTER — 座標情報
+================================================================ */
+footer{
+  position:relative; z-index:2;
+  max-width:var(--w-max); margin:0 auto;
+  padding:110px var(--pad) 34px;
+}
+.foot-line{
+  border-top:1px solid var(--hairline);
+  padding-top:22px;
+  display:flex; flex-wrap:wrap; gap:14px 34px;
+  justify-content:space-between;
+  font-family:var(--mono); font-size:10px; letter-spacing:.18em; color:var(--faint);
+}
+.foot-line b{ color:var(--dim); font-weight:400; }
+</style>
+</head>
+<body>
+
+<div class="grid-lines" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+
+<nav>
+  <div class="nav-inner">
+    <a class="nav-logo" href="#">BRAINDUMPER<em>_</em></a>
+    <div class="nav-links">
+      <a href="#writing"><span>01</span><span class="lbl">WRITING</span></a>
+      <a href="#works"><span>02</span><span class="lbl">WORKS</span></a>
+      <a href="#apps"><span>03</span><span class="lbl">APPS</span></a>
+      <a href="#about"><span>04</span><span class="lbl">ABOUT</span></a>
+    </div>
+  </div>
+</nav>
+
+<!-- ============================ HERO ============================ -->
+<header>
+  <canvas id="rain" aria-hidden="true"></canvas>
+  <div class="hero-inner">
+    <p class="hero-kicker rise d1">MEDIA ARTIST&nbsp;/&nbsp;CRITIC — TOKYO</p>
+    <h1 class="rise d2">BRAIN<br>DUMPER<span class="dot">.</span></h1>
+    <p class="hero-sub rise d3"><b>思考の廃棄場</b>&nbsp;&nbsp;//&nbsp;&nbsp;DUMPED THOUGHTS, STRUCTURED.</p>
+    <p class="hero-statement rise d4">
+      作ることと論じることは、同じ一つの行為の表と裏である。
+      ここは、その両方が堆積していく場所。
+    </p>
+  </div>
+  <p class="hero-vertical rise d5">思考の残骸を、構造へ。</p>
+  <div class="hero-meta rise d5">
+    <span>EST. 2026 — ONGOING</span>
+    <span>SCROLL ↓</span>
+  </div>
+</header>
+
+<!-- ============================ 00 STATEMENT ============================ -->
+<section id="statement">
+  <div class="sec-head io">
+    <span class="sec-no">00</span>
+    <h2 class="sec-title">Statement</h2>
+    <span class="sec-title-jp">声明</span>
+    <span class="ghost" aria-hidden="true">00</span>
+  </div>
+  <div class="statement">
+    <p class="io">頭の中を、整形せずに外へ出す。<br>
+    それを構造に鍛え直す作業だけが、<br>
+    思考と呼ぶに値する。</p>
+    <p class="io">作品は沈黙する論考であり、<br>
+    論考は言語でできた作品である。<br>
+    私はその往復<span class="amp">だけ</span>をやる。</p>
+    <p class="statement-note io">
+      Braindumper は、メディアアートの制作と批評的なテキストの執筆を、分離せずに続けるための名義です。
+      展示・上演の記録は Works に、思考の本体はすべて Writing に置かれます。
+    </p>
+  </div>
+</section>
+
+<!-- ============================ 01 WRITING ============================ -->
+<section id="writing">
+  <div class="sec-head io">
+    <span class="sec-no">01</span>
+    <h2 class="sec-title">Writing</h2>
+    <span class="sec-title-jp">論考・批評</span>
+    <span class="ghost" aria-hidden="true">01</span>
+  </div>
+
+  <!--
+    運用メモ: 新しいテキストを公開したら <li> を先頭に1行追加するだけ。
+    href に note / Zenn / Medium の記事URLを入れる。
+  -->
+  <ul class="index">
+    <li class="io"><a href="#" target="_blank" rel="noopener">
+      <span class="idx-no">005</span>
+      <span class="idx-date">2026.06.28</span>
+      <span class="idx-title">生成の時代に「作者」はどこへ退却するか</span>
+      <span class="idx-meta">批評<span class="venue">→ NOTE</span></span>
+    </a></li>
+    <li class="io"><a href="#" target="_blank" rel="noopener">
+      <span class="idx-no">004</span>
+      <span class="idx-date">2026.05.14</span>
+      <span class="idx-title">ノイズは情報の敗北ではない — 池田亮司以後の視聴覚</span>
+      <span class="idx-meta">メディア論<span class="venue">→ MEDIUM</span></span>
+    </a></li>
+    <li class="io"><a href="#" target="_blank" rel="noopener">
+      <span class="idx-no">003</span>
+      <span class="idx-date">2026.04.02</span>
+      <span class="idx-title">ブレインダンプという方法 — 書くことと考えることの順序について</span>
+      <span class="idx-meta">方法論<span class="venue">→ NOTE</span></span>
+    </a></li>
+    <li class="io"><a href="#" target="_blank" rel="noopener">
+      <span class="idx-no">002</span>
+      <span class="idx-date">2026.02.19</span>
+      <span class="idx-title">単一HTMLという思想 — ビルドしないことの設計論</span>
+      <span class="idx-meta">技術<span class="venue">→ ZENN</span></span>
+    </a></li>
+    <li class="io"><a href="#" target="_blank" rel="noopener">
+      <span class="idx-no">001</span>
+      <span class="idx-date">2026.01.07</span>
+      <span class="idx-title">暗闇のインターフェース — 黒背景の現象学</span>
+      <span class="idx-meta">批評<span class="venue">→ NOTE</span></span>
+    </a></li>
+  </ul>
+  <div class="index-foot io">
+    <span>INDEX: 005 ENTRIES</span>
+    <a href="#" target="_blank" rel="noopener">ALL TEXTS →</a>
+  </div>
+</section>
+
+<!-- ============================ 02 WORKS ============================ -->
+<section id="works">
+  <div class="sec-head io">
+    <span class="sec-no">02</span>
+    <h2 class="sec-title">Works</h2>
+    <span class="sec-title-jp">作品</span>
+    <span class="ghost" aria-hidden="true">02</span>
+  </div>
+
+  <div class="works">
+    <article class="work io">
+      <div class="work-visual" aria-hidden="true">
+        <svg viewBox="0 0 400 300" preserveAspectRatio="none">
+          <rect width="400" height="300" fill="#060606"/>
+          <g fill="#e8e6e1">
+            <rect x="0" y="30"  width="400" height="2" opacity=".8"/>
+            <rect x="0" y="52"  width="400" height="1" opacity=".35"/>
+            <rect x="0" y="90"  width="400" height="6" opacity=".95"/>
+            <rect x="0" y="130" width="400" height="1" opacity=".3"/>
+            <rect x="0" y="158" width="400" height="3" opacity=".6"/>
+            <rect x="0" y="210" width="400" height="1" opacity=".25"/>
+            <rect x="0" y="238" width="400" height="10" opacity=".9"/>
+            <rect x="0" y="272" width="400" height="1" opacity=".4"/>
+          </g>
+          <rect class="scan" x="0" y="0" width="400" height="70" fill="#ff2d1f" opacity=".12"/>
+        </svg>
+      </div>
+      <span class="work-id">W-03 / 2026</span>
+      <h3 class="work-title">SIGNAL DECAY</h3>
+      <p class="work-desc">放送信号が崩壊していく過程を、走査線の解像度で引き延ばすオーディオヴィジュアル・インスタレーション。</p>
+      <span class="work-tags">INSTALLATION / A-V / 32CH</span>
+    </article>
+
+    <article class="work io">
+      <div class="work-visual" aria-hidden="true">
+        <svg viewBox="0 0 400 300">
+          <rect width="400" height="300" fill="#060606"/>
+          <g fill="#e8e6e1" id="dots"></g>
+        </svg>
+      </div>
+      <span class="work-id">W-02 / 2025</span>
+      <h3 class="work-title">RESIDUE</h3>
+      <p class="work-desc">消去されたデータの欠損位置だけを版として刷る、ジェネラティブ・プリントの連作。欠けたものの座標が図になる。</p>
+      <span class="work-tags">GENERATIVE / PRINT / SERIES OF 12</span>
+    </article>
+
+    <article class="work io">
+      <div class="work-visual" aria-hidden="true">
+        <svg viewBox="0 0 400 300" font-family="IBM Plex Mono, monospace" font-size="11">
+          <rect width="400" height="300" fill="#060606"/>
+          <g fill="#e8e6e1" id="glyphs"></g>
+        </svg>
+      </div>
+      <span class="work-id">W-01 / 2025</span>
+      <h3 class="work-title">DUMP//STREAM</h3>
+      <p class="work-desc">思考のログを整形せずリアルタイムに投射するパフォーマンス。編集される前の言語の速度を、そのまま観客に晒す。</p>
+      <span class="work-tags">PERFORMANCE / REALTIME / TEXT</span>
+    </article>
+  </div>
+</section>
+
+<!-- ============================ 03 APPS ============================ -->
+<section id="apps">
+  <div class="sec-head io">
+    <span class="sec-no">03</span>
+    <h2 class="sec-title">Apps</h2>
+    <span class="sec-title-jp">道具</span>
+    <span class="ghost" aria-hidden="true">03</span>
+  </div>
+
+  <div class="apps">
+    <article class="app io">
+      <span class="app-status dev"><i></i>IN DEVELOPMENT</span>
+      <h3 class="app-name">braindump.app</h3>
+      <p class="app-desc">思考を構造化する前に保存するためのノートツール。整理は後、記録が先。</p>
+    </article>
+    <article class="app io">
+      <span class="app-status"><i></i>CONCEPT</span>
+      <h3 class="app-name">Reader Zero</h3>
+      <p class="app-desc">黒基調・組版優先の長文リーダー。読むことに周辺光を許さない。</p>
+    </article>
+  </div>
+  <p class="apps-note io">TOOLS WILL BE DEPOSITED HERE AS THEY SURVIVE.</p>
+</section>
+
+<!-- ============================ 04 ABOUT ============================ -->
+<section id="about">
+  <div class="sec-head io">
+    <span class="sec-no">04</span>
+    <h2 class="sec-title">About</h2>
+    <span class="sec-title-jp">経歴・接続</span>
+    <span class="ghost" aria-hidden="true">04</span>
+  </div>
+
+  <div class="about">
+    <div class="bio io">
+      <p>Braindumper。メディアアーティスト、論客。データと言語を素材に、インスタレーション、パフォーマンス、そして批評的テキストを制作する。</p>
+      <p>関心の中心は「整形される前の思考」。頭の中の未編集の状態をいかに外化し、いかに構造へ鍛え直すか — その工程自体を作品と論考の両方で扱う。テキストは note / Zenn / Medium に、作品と道具はこの場所に堆積していく。</p>
+    </div>
+    <ul class="channels io">
+      <li><a href="#" target="_blank" rel="noopener">NOTE</a></li>
+      <li><a href="#" target="_blank" rel="noopener">ZENN</a></li>
+      <li><a href="#" target="_blank" rel="noopener">MEDIUM</a></li>
+      <li><a href="#" target="_blank" rel="noopener">GITHUB</a></li>
+      <li><a href="#" target="_blank" rel="noopener">X / TWITTER</a></li>
+      <li><a href="mailto:contact@example.com">MAIL</a></li>
+    </ul>
+  </div>
+</section>
+
+<footer>
+  <div class="foot-line">
+    <span><b>BRAINDUMPER</b> © 2026</span>
+    <span>35.6762°N 139.6503°E</span>
+    <span>SINGLE FILE / NO BUILD</span>
+    <span>DUMPED, THEN STRUCTURED.</span>
+  </div>
+</footer>
+
+<script>
+/* ================================================================
+   hero canvas — 低輝度のデータレイン(暗闇を壊さない範囲で)
+================================================================ */
+(function(){
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const c = document.getElementById('rain');
+  const x = c.getContext('2d');
+  const CHARS = '01アイウエオカキクケコサシスセソタチツテト+-/*=<>';
+  const fs = 14;
+  let cols, drops, W, H;
+
+  function size(){
+    const r = c.getBoundingClientRect();
+    const dpr = devicePixelRatio || 1;
+    W = r.width; H = r.height;
+    c.width  = Math.round(W * dpr);
+    c.height = Math.round(H * dpr);
+    x.setTransform(dpr, 0, 0, dpr, 0, 0);
+    x.fillStyle = '#0a0a0a';
+    x.fillRect(0, 0, W, H);
+    cols = Math.floor(W / (fs * 1.6));
+    drops = Array.from({length:cols}, () => Math.random() * H / fs);
+  }
+  size();
+  addEventListener('resize', size);
+  if(document.fonts && document.fonts.ready) document.fonts.ready.then(size);
+
+  function frame(){
+    x.fillStyle = 'rgba(10,10,10,0.14)';
+    x.fillRect(0,0,W,H);
+    x.font = fs + 'px "IBM Plex Mono", monospace';
+    for(let i=0; i<cols; i++){
+      const ch = CHARS[Math.random()*CHARS.length|0];
+      // ごく稀にだけ信号の赤を灯す
+      x.fillStyle = Math.random() < 0.004 ? 'rgba(255,45,31,0.5)' : 'rgba(232,230,225,0.085)';
+      x.fillText(ch, i*fs*1.6, drops[i]*fs);
+      drops[i] = drops[i]*fs > H && Math.random() > .975 ? 0 : drops[i] + .35;
+    }
+  }
+  if(reduced){
+    // 静止画として数フレームだけ描いて止める
+    for(let i=0;i<60;i++) frame();
+  }else{
+    (function loop(){ frame(); requestAnimationFrame(loop); })();
+  }
+})();
+
+/* ================================================================
+   RESIDUE / DUMP//STREAM — SVG をシード付き擬似乱数で生成
+================================================================ */
+(function(){
+  let seed = 20260707;
+  const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+
+  const dots = document.getElementById('dots');
+  if(dots){
+    let s = '';
+    for(let gy=0; gy<12; gy++){
+      for(let gx=0; gx<16; gx++){
+        if(rnd() < 0.78){
+          const o = (0.15 + rnd()*0.6).toFixed(2);
+          s += `<circle cx="${14+gx*24}" cy="${16+gy*24}" r="${rnd()<.08?4:1.8}" opacity="${o}"/>`;
+        }
+      }
+    }
+    dots.innerHTML = s;
+  }
+
+  const gl = document.getElementById('glyphs');
+  if(gl){
+    const words = ['dump','void','0x1F','rem','::','//','&gt;&gt;','err','mem','---','tx','&amp;'];
+    let s = '';
+    for(let col=0; col<7; col++){
+      for(let row=0; row<14; row++){
+        if(rnd() < 0.62){
+          const o = (0.08 + rnd()*0.5).toFixed(2);
+          s += `<text x="${18+col*55}" y="${22+row*20}" opacity="${o}">${words[rnd()*words.length|0]}</text>`;
+        }
+      }
+    }
+    gl.innerHTML = s;
+  }
+})();
+
+/* ================================================================
+   スクロール出現 — 静かに、一度だけ
+================================================================ */
+(function(){
+  const io = new IntersectionObserver(es => {
+    es.forEach(e => { if(e.isIntersecting){ e.target.classList.add('on'); io.unobserve(e.target); } });
+  }, { threshold: 0.12, rootMargin: '0px 0px -6% 0px' });
+  document.querySelectorAll('.io').forEach(el => io.observe(el));
+})();
+</script>
+</body>
+</html>
