@@ -4,7 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>BRAINDUMPER — Media Artist / Critic</title>
-<meta name="description" content="Braindumper — メディアアーティスト、論客。思考の残骸を構造へ。">
+<meta name="description" content="Braindumper — メディアアーティスト、論客。作品・論考・道具のアーカイブ。">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Crect width='64' height='64' fill='%230a0a0a'/%3E%3Ccircle cx='45' cy='45' r='11' fill='%23ff2d1f'/%3E%3C/svg%3E">
+<meta property="og:title" content="BRAINDUMPER — Media Artist / Critic">
+<meta property="og:description" content="Braindumper — メディアアーティスト、論客。作品・論考・道具のアーカイブ。">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Person","name":"Braindumper","jobTitle":"Media Artist / Critic","knowsAbout":["Media Art","Criticism","Generative Art"]}
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,200;0,9..144,300;0,9..144,600;0,9..144,900;1,9..144,300&family=IBM+Plex+Mono:wght@400;500&family=Shippori+Mincho:wght@500;700;800&family=Zen+Kaku+Gothic+New:wght@400;500&display=swap" rel="stylesheet">
@@ -198,6 +206,63 @@ html.cur-hover .cur-ring{ width:44px; height:44px; border-color:var(--signal); }
   transition-delay:calc(var(--i, 0) * .13s);
 }
 .lines.on .ln-i{ transform:none; }
+
+/* ---- Hero タイトルの粒子化キャンバス(機械が論客の言葉を読み取る) ---- */
+.h1-fx{ position:absolute; z-index:3; pointer-events:none; }
+h1.fx-on, h1.fx-on .dot{ color:transparent; }
+
+/* ---- アーカイブ統計バンド(SITE データから自動計算) ---- */
+.band{
+  position:relative; z-index:2;
+  margin-top:clamp(90px, 14vh, 160px);
+  border-top:1px solid var(--hairline); border-bottom:1px solid var(--hairline);
+  background:var(--ink-2);
+}
+.band-inner{
+  max-width:var(--w-max); margin:0 auto;
+  padding:36px var(--pad);
+  display:flex; flex-wrap:wrap; gap:18px 64px; align-items:baseline;
+}
+.band-inner span{ font-family:var(--mono); font-size:10.5px; letter-spacing:.14em; color:var(--dim); }
+.band-inner b{
+  font-family:var(--serif-en); font-weight:600; letter-spacing:0;
+  font-size:clamp(26px, 3.2vw, 38px); color:var(--paper);
+  margin-right:.4em;
+}
+.band-inner .upd{ margin-left:auto; }
+.band-inner .upd b{ font-size:13px; font-family:var(--mono); font-weight:400; }
+#works{ padding-top:clamp(60px, 9vh, 100px); }
+
+/* ---- Works 詳細(クリックで展開するケーススタディ) ---- */
+.work{ cursor:pointer; }
+.work-toggle{ float:right; font-style:normal; color:var(--faint); transition:color .25s; }
+.work:hover .work-toggle{ color:var(--signal); }
+.work-detail{ max-height:0; overflow:hidden; transition:max-height .55s cubic-bezier(.19,1,.22,1); }
+.work.open .work-detail{ max-height:360px; }
+.work-detail dl{ border-top:1px solid var(--hairline); padding-top:14px; margin-top:4px; }
+.work-detail dl div{ display:flex; gap:14px; padding:3px 0; }
+.work-detail dt{ font-family:var(--mono); font-size:10.5px; letter-spacing:.12em; color:var(--faint); min-width:8em; }
+.work-detail dd{ font-size:12.5px; color:var(--dim); }
+.work-detail > p{ margin-top:12px; font-size:12.5px; line-height:1.85; color:var(--dim); }
+
+/* ---- サウンドトグル / アクセシビリティ ---- */
+.snd{
+  background:none; border:0; padding:0; font:inherit; letter-spacing:inherit;
+  color:var(--dim); cursor:pointer; transition:color .25s;
+}
+.snd:hover{ color:var(--paper); }
+.snd.on{ color:var(--signal); }
+.snd::after{ content:' ─ OFF'; }
+.snd.on::after{ content:' ● ON'; }
+@media(max-width:640px){ .snd::after, .snd.on::after{ content:''; } }
+.skip{
+  position:fixed; top:12px; left:12px; z-index:120;
+  background:var(--ink-2); border:1px solid var(--hairline);
+  font-family:var(--mono); font-size:11px; letter-spacing:.14em;
+  padding:9px 16px; transform:translateY(-300%);
+}
+.skip:focus{ transform:none; }
+:focus-visible{ outline:1px solid var(--signal); outline-offset:4px; }
 
 /* ---- ロード時 staggered reveal(一度の完璧な幕開け) ---- */
 .rise{
@@ -436,6 +501,7 @@ footer{
   </div>
 </div>
 
+<a class="skip" href="#writing">コンテンツへスキップ</a>
 <nav>
   <div class="nav-inner">
     <a class="nav-logo" href="#">BRAINDUMPER<em>_</em></a>
@@ -444,6 +510,7 @@ footer{
       <a href="#works"><span>02</span><span class="lbl">WORKS</span></a>
       <a href="#apps"><span>03</span><span class="lbl">APPS</span></a>
       <a href="#about"><span>04</span><span class="lbl">ABOUT</span></a>
+      <button class="snd" id="snd" aria-pressed="false" aria-label="ambient sound">SND</button>
     </div>
   </div>
 </nav>
@@ -494,46 +561,25 @@ footer{
   </div>
 
   <!--
-    運用メモ: 新しいテキストを公開したら <li> を先頭に1行追加するだけ。
-    href に note / Zenn / Medium の記事URLを入れる。
+    運用メモ: 記事・作品・アプリ・接続先の追加は、<script> 冒頭の SITE データに
+    1オブジェクト追記するだけ。番号・件数・統計・最終更新日は全て自動計算される。
   -->
-  <ul class="index">
-    <li class="io"><a href="#" target="_blank" rel="noopener">
-      <span class="idx-no">005</span>
-      <span class="idx-date">2026.06.28</span>
-      <span class="idx-title">生成の時代に「作者」はどこへ退却するか</span>
-      <span class="idx-meta">批評<span class="venue">→ NOTE</span></span>
-    </a></li>
-    <li class="io"><a href="#" target="_blank" rel="noopener">
-      <span class="idx-no">004</span>
-      <span class="idx-date">2026.05.14</span>
-      <span class="idx-title">ノイズは情報の敗北ではない — 池田亮司以後の視聴覚</span>
-      <span class="idx-meta">メディア論<span class="venue">→ MEDIUM</span></span>
-    </a></li>
-    <li class="io"><a href="#" target="_blank" rel="noopener">
-      <span class="idx-no">003</span>
-      <span class="idx-date">2026.04.02</span>
-      <span class="idx-title">ブレインダンプという方法 — 書くことと考えることの順序について</span>
-      <span class="idx-meta">方法論<span class="venue">→ NOTE</span></span>
-    </a></li>
-    <li class="io"><a href="#" target="_blank" rel="noopener">
-      <span class="idx-no">002</span>
-      <span class="idx-date">2026.02.19</span>
-      <span class="idx-title">単一HTMLという思想 — ビルドしないことの設計論</span>
-      <span class="idx-meta">技術<span class="venue">→ ZENN</span></span>
-    </a></li>
-    <li class="io"><a href="#" target="_blank" rel="noopener">
-      <span class="idx-no">001</span>
-      <span class="idx-date">2026.01.07</span>
-      <span class="idx-title">暗闇のインターフェース — 黒背景の現象学</span>
-      <span class="idx-meta">批評<span class="venue">→ NOTE</span></span>
-    </a></li>
-  </ul>
+  <ul class="index" id="writing-list"></ul>
   <div class="index-foot io">
-    <span>INDEX: 005 ENTRIES</span>
+    <span>INDEX: <span id="idx-count">—</span> ENTRIES</span>
     <a href="#" target="_blank" rel="noopener">ALL TEXTS →</a>
   </div>
 </section>
+
+<!-- ============================ ARCHIVE STATS ============================ -->
+<div class="band" id="stats">
+  <div class="band-inner io">
+    <span><b id="st-texts">0</b>TEXTS</span>
+    <span><b id="st-works">0</b>WORKS</span>
+    <span><b id="st-apps">0</b>TOOLS</span>
+    <span class="upd">LAST UPDATE <b id="st-upd">—</b></span>
+  </div>
+</div>
 
 <!-- ============================ 02 WORKS ============================ -->
 <section id="works">
@@ -544,56 +590,7 @@ footer{
     <span class="ghost" aria-hidden="true">02</span>
   </div>
 
-  <div class="works">
-    <article class="work io">
-      <div class="work-visual" aria-hidden="true">
-        <svg viewBox="0 0 400 300" preserveAspectRatio="none">
-          <rect width="400" height="300" fill="#060606"/>
-          <g fill="#e8e6e1">
-            <rect x="0" y="30"  width="400" height="2" opacity=".8"/>
-            <rect x="0" y="52"  width="400" height="1" opacity=".35"/>
-            <rect x="0" y="90"  width="400" height="6" opacity=".95"/>
-            <rect x="0" y="130" width="400" height="1" opacity=".3"/>
-            <rect x="0" y="158" width="400" height="3" opacity=".6"/>
-            <rect x="0" y="210" width="400" height="1" opacity=".25"/>
-            <rect x="0" y="238" width="400" height="10" opacity=".9"/>
-            <rect x="0" y="272" width="400" height="1" opacity=".4"/>
-          </g>
-          <rect class="scan" x="0" y="0" width="400" height="70" fill="#ff2d1f" opacity=".12"/>
-        </svg>
-      </div>
-      <span class="work-id">W-03 / 2026</span>
-      <h3 class="work-title">SIGNAL DECAY</h3>
-      <p class="work-desc">放送信号が崩壊していく過程を、走査線の解像度で引き延ばすオーディオヴィジュアル・インスタレーション。</p>
-      <span class="work-tags">INSTALLATION / A-V / 32CH</span>
-    </article>
-
-    <article class="work io">
-      <div class="work-visual" aria-hidden="true">
-        <svg viewBox="0 0 400 300">
-          <rect width="400" height="300" fill="#060606"/>
-          <g fill="#e8e6e1" id="dots"></g>
-        </svg>
-      </div>
-      <span class="work-id">W-02 / 2025</span>
-      <h3 class="work-title">RESIDUE</h3>
-      <p class="work-desc">消去されたデータの欠損位置を版として刷る、ジェネラティブ・プリントの連作。</p>
-      <span class="work-tags">GENERATIVE / PRINT / SERIES OF 12</span>
-    </article>
-
-    <article class="work io">
-      <div class="work-visual" aria-hidden="true">
-        <svg viewBox="0 0 400 300" font-family="IBM Plex Mono, monospace" font-size="11">
-          <rect width="400" height="300" fill="#060606"/>
-          <g fill="#e8e6e1" id="glyphs"></g>
-        </svg>
-      </div>
-      <span class="work-id">W-01 / 2025</span>
-      <h3 class="work-title">DUMP//STREAM</h3>
-      <p class="work-desc">入力されるテキストログを、整形せずそのままスクリーンへ投射するリアルタイム・パフォーマンス。</p>
-      <span class="work-tags">PERFORMANCE / REALTIME / TEXT</span>
-    </article>
-  </div>
+  <div class="works" id="works-grid"></div>
 </section>
 
 <!-- ============================ 03 APPS ============================ -->
@@ -605,18 +602,7 @@ footer{
     <span class="ghost" aria-hidden="true">03</span>
   </div>
 
-  <div class="apps">
-    <article class="app io">
-      <span class="app-status dev"><i></i>IN DEVELOPMENT</span>
-      <h3 class="app-name">braindump.app</h3>
-      <p class="app-desc">思考を構造化する前に保存するためのノートツール。整理は後、記録が先。</p>
-    </article>
-    <article class="app io">
-      <span class="app-status"><i></i>CONCEPT</span>
-      <h3 class="app-name">Reader Zero</h3>
-      <p class="app-desc">黒基調・組版優先の長文リーダー。設計中。</p>
-    </article>
-  </div>
+  <div class="apps" id="apps-grid"></div>
   <p class="apps-note io">MORE TOOLS IN PREPARATION.</p>
 </section>
 
@@ -634,14 +620,7 @@ footer{
       <p>Braindumper。メディアアーティスト、論客。データと言語を素材に、インスタレーション、パフォーマンス、そして批評的テキストを制作する。</p>
       <p>テキストは note / Zenn / Medium で公開し、その索引を本ページの Writing に置いている。作品の記録と開発中のツールも、順次ここに追加していく。このサイト自体もフレームワークやビルドを使わない単一のHTMLファイルとして手書きで実装している。</p>
     </div>
-    <ul class="channels io">
-      <li><a href="#" target="_blank" rel="noopener">NOTE</a></li>
-      <li><a href="#" target="_blank" rel="noopener">ZENN</a></li>
-      <li><a href="#" target="_blank" rel="noopener">MEDIUM</a></li>
-      <li><a href="#" target="_blank" rel="noopener">GITHUB</a></li>
-      <li><a href="#" target="_blank" rel="noopener">X / TWITTER</a></li>
-      <li><a href="mailto:contact@example.com">MAIL</a></li>
-    </ul>
+    <ul class="channels io" id="channels-list"></ul>
   </div>
 </section>
 
@@ -655,6 +634,160 @@ footer{
 </footer>
 
 <script>
+/* ================================================================
+   SITE — このサイトの唯一のコンテンツ情報源
+   ここに追記するだけで、リスト・番号・件数・統計・最終更新日が全て更新される。
+   ・writing: 新しい記事を配列の【先頭】に追加(新しい順)
+   ・works:   新しい作品を配列の【先頭】に追加。viz は 'scan' | 'dots' | 'glyphs' から再利用
+   ・apps:    status は 'dev'(赤点滅) | 'concept' | 'live'
+================================================================ */
+const SITE = {
+  writing: [
+    { date:'2026.06.28', title:'生成の時代に「作者」はどこへ退却するか', tag:'批評', venue:'NOTE', url:'#' },
+    { date:'2026.05.14', title:'ノイズは情報の敗北ではない — 池田亮司以後の視聴覚', tag:'メディア論', venue:'MEDIUM', url:'#' },
+    { date:'2026.04.02', title:'ブレインダンプという方法 — 書くことと考えることの順序について', tag:'方法論', venue:'NOTE', url:'#' },
+    { date:'2026.02.19', title:'単一HTMLという思想 — ビルドしないことの設計論', tag:'技術', venue:'ZENN', url:'#' },
+    { date:'2026.01.07', title:'暗闇のインターフェース — 黒背景の現象学', tag:'批評', venue:'NOTE', url:'#' },
+  ],
+  works: [
+    { id:'W-03', year:'2026', title:'SIGNAL DECAY', viz:'scan',
+      desc:'放送信号が崩壊していく過程を、走査線の解像度で引き延ばすオーディオヴィジュアル・インスタレーション。',
+      tags:'INSTALLATION / A-V / 32CH',
+      detail:{ medium:'32chスピーカー / 3面プロジェクション / カスタムソフトウェア',
+               exhibited:'2026 個展(東京)',
+               note:'アナログ放送の停波信号をサンプリングし、1フレームを約40秒まで引き延ばして走査線単位で再生する。崩壊の速度そのものを聴取の対象とする試み。' } },
+    { id:'W-02', year:'2025', title:'RESIDUE', viz:'dots',
+      desc:'消去されたデータの欠損位置を版として刷る、ジェネラティブ・プリントの連作。',
+      tags:'GENERATIVE / PRINT / SERIES OF 12',
+      detail:{ medium:'ジェネラティブ・プリント / 顔料インク / 全12点',
+               exhibited:'2025 グループ展(京都)',
+               note:'削除済みストレージのセクタマップから欠損座標のみを抽出し、その座標群を版として出力する。残っているものではなく、失われたものの形を刷る。' } },
+    { id:'W-01', year:'2025', title:'DUMP//STREAM', viz:'glyphs',
+      desc:'入力されるテキストログを、整形せずそのままスクリーンへ投射するリアルタイム・パフォーマンス。',
+      tags:'PERFORMANCE / REALTIME / TEXT',
+      detail:{ medium:'ライブコーディング環境 / 単面プロジェクション / 約40分',
+               exhibited:'2025 上演(東京・大阪)',
+               note:'執筆中のエディタバッファをそのまま投射する。推敲・削除・タイプミスを含む未編集の言語の速度を上演の素材として扱う。' } },
+  ],
+  apps: [
+    { name:'braindump.app', status:'dev', label:'IN DEVELOPMENT',
+      desc:'思考を構造化する前に保存するためのノートツール。整理は後、記録が先。' },
+    { name:'Reader Zero', status:'concept', label:'CONCEPT',
+      desc:'黒基調・組版優先の長文リーダー。設計中。' },
+  ],
+  channels: [
+    { name:'NOTE', url:'#' },
+    { name:'ZENN', url:'#' },
+    { name:'MEDIUM', url:'#' },
+    { name:'GITHUB', url:'#' },
+    { name:'X / TWITTER', url:'#' },
+    { name:'MAIL', url:'mailto:contact@example.com' },
+  ],
+};
+
+/* ================================================================
+   レンダラ — SITE からページを組み立てる
+================================================================ */
+(function(){
+  // シード付き擬似乱数(リロードしても同じ図像になる)
+  function mkRnd(seed){ let s = seed; return () => (s = (s * 16807) % 2147483647) / 2147483647; }
+
+  const VIZ = {
+    scan(rnd){
+      let bars = '';
+      for(let i=0; i<8; i++){
+        const y = 18 + rnd()*260, h = rnd()<.3 ? 4+rnd()*7 : 1+rnd()*2;
+        bars += `<rect x="0" y="${y.toFixed(0)}" width="400" height="${h.toFixed(0)}" opacity="${(.25+rnd()*.7).toFixed(2)}"/>`;
+      }
+      return `<svg viewBox="0 0 400 300" preserveAspectRatio="none">
+        <rect width="400" height="300" fill="#060606"/>
+        <g fill="#e8e6e1">${bars}</g>
+        <rect class="scan" x="0" y="0" width="400" height="70" fill="#ff2d1f" opacity=".12"/></svg>`;
+    },
+    dots(rnd){
+      let s = '';
+      for(let gy=0; gy<12; gy++) for(let gx=0; gx<16; gx++){
+        if(rnd() < .78) s += `<circle cx="${14+gx*24}" cy="${16+gy*24}" r="${rnd()<.08?4:1.8}" opacity="${(.15+rnd()*.6).toFixed(2)}"/>`;
+      }
+      return `<svg viewBox="0 0 400 300"><rect width="400" height="300" fill="#060606"/><g fill="#e8e6e1" class="viz-dots">${s}</g></svg>`;
+    },
+    glyphs(rnd){
+      const words = ['dump','void','0x1F','rem','::','//','&gt;&gt;','err','mem','---','tx','&amp;'];
+      let s = '';
+      for(let col=0; col<7; col++) for(let row=0; row<14; row++){
+        if(rnd() < .62) s += `<text x="${18+col*55}" y="${22+row*20}" opacity="${(.08+rnd()*.5).toFixed(2)}">${words[rnd()*words.length|0]}</text>`;
+      }
+      return `<svg viewBox="0 0 400 300" font-family="IBM Plex Mono, monospace" font-size="11">
+        <rect width="400" height="300" fill="#060606"/><g fill="#e8e6e1" class="viz-glyphs">${s}</g></svg>`;
+    },
+  };
+
+  // Writing — 番号は自動採番(新しいものほど大きい)
+  const wl = document.getElementById('writing-list');
+  const total = SITE.writing.length;
+  wl.innerHTML = SITE.writing.map((w, i) => `
+    <li class="io"><a href="${w.url}" target="_blank" rel="noopener">
+      <span class="idx-no">${String(total - i).padStart(3,'0')}</span>
+      <span class="idx-date">${w.date}</span>
+      <span class="idx-title">${w.title}</span>
+      <span class="idx-meta">${w.tag}<span class="venue">→ ${w.venue}</span></span>
+    </a></li>`).join('');
+  document.getElementById('idx-count').textContent = String(total).padStart(3,'0');
+
+  // Works — viz はタイプ別ジェネレータで自前描画(画像アセット不要)
+  document.getElementById('works-grid').innerHTML = SITE.works.map((w, i) => `
+    <article class="work io" tabindex="0" role="button" aria-expanded="false">
+      <div class="work-visual" aria-hidden="true">${VIZ[w.viz](mkRnd(20260707 + i * 7919))}</div>
+      <span class="work-id">${w.id} / ${w.year}<i class="work-toggle">+ DETAIL</i></span>
+      <h3 class="work-title">${w.title}</h3>
+      <p class="work-desc">${w.desc}</p>
+      <div class="work-detail">
+        <dl>
+          <div><dt>MEDIUM</dt><dd>${w.detail.medium}</dd></div>
+          <div><dt>EXHIBITED</dt><dd>${w.detail.exhibited}</dd></div>
+        </dl>
+        <p>${w.detail.note}</p>
+      </div>
+      <span class="work-tags">${w.tags}</span>
+    </article>`).join('');
+
+  // Apps
+  document.getElementById('apps-grid').innerHTML = SITE.apps.map(a => `
+    <article class="app io">
+      <span class="app-status ${a.status === 'dev' ? 'dev' : ''}"><i></i>${a.label}</span>
+      <h3 class="app-name">${a.name}</h3>
+      <p class="app-desc">${a.desc}</p>
+    </article>`).join('');
+
+  // Channels
+  document.getElementById('channels-list').innerHTML = SITE.channels.map(c => {
+    const ext = c.url.startsWith('mailto:') ? '' : ' target="_blank" rel="noopener"';
+    return `<li><a href="${c.url}"${ext}>${c.name}</a></li>`;
+  }).join('');
+
+  // アーカイブ統計(バンド)— 全て自動計算
+  document.getElementById('st-texts').textContent = String(total).padStart(2,'0');
+  document.getElementById('st-works').textContent = String(SITE.works.length).padStart(2,'0');
+  document.getElementById('st-apps').textContent  = String(SITE.apps.length).padStart(2,'0');
+  document.getElementById('st-upd').textContent   = SITE.writing[0] ? SITE.writing[0].date : '—';
+
+  // Works 詳細の開閉(クリック / Enter / Space)
+  const grid = document.getElementById('works-grid');
+  function toggle(card){
+    const open = card.classList.toggle('open');
+    card.setAttribute('aria-expanded', open);
+    card.querySelector('.work-toggle').textContent = open ? '− CLOSE' : '+ DETAIL';
+  }
+  grid.addEventListener('click', e => {
+    const card = e.target.closest('.work');
+    if(card && !e.target.closest('a')) toggle(card);
+  });
+  grid.addEventListener('keydown', e => {
+    const card = e.target.closest('.work');
+    if(card && (e.key === 'Enter' || e.key === ' ')){ e.preventDefault(); toggle(card); }
+  });
+})();
+
 /* ================================================================
    hero canvas — 低輝度のデータレイン(暗闇を壊さない範囲で)
 ================================================================ */
@@ -711,43 +844,6 @@ footer{
     for(let i=0;i<60;i++) frame();
   }else{
     (function loop(){ frame(); requestAnimationFrame(loop); })();
-  }
-})();
-
-/* ================================================================
-   RESIDUE / DUMP//STREAM — SVG をシード付き擬似乱数で生成
-================================================================ */
-(function(){
-  let seed = 20260707;
-  const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
-
-  const dots = document.getElementById('dots');
-  if(dots){
-    let s = '';
-    for(let gy=0; gy<12; gy++){
-      for(let gx=0; gx<16; gx++){
-        if(rnd() < 0.78){
-          const o = (0.15 + rnd()*0.6).toFixed(2);
-          s += `<circle cx="${14+gx*24}" cy="${16+gy*24}" r="${rnd()<.08?4:1.8}" opacity="${o}"/>`;
-        }
-      }
-    }
-    dots.innerHTML = s;
-  }
-
-  const gl = document.getElementById('glyphs');
-  if(gl){
-    const words = ['dump','void','0x1F','rem','::','//','&gt;&gt;','err','mem','---','tx','&amp;'];
-    let s = '';
-    for(let col=0; col<7; col++){
-      for(let row=0; row<14; row++){
-        if(rnd() < 0.62){
-          const o = (0.08 + rnd()*0.5).toFixed(2);
-          s += `<text x="${18+col*55}" y="${22+row*20}" opacity="${o}">${words[rnd()*words.length|0]}</text>`;
-        }
-      }
-    }
-    gl.innerHTML = s;
   }
 })();
 
@@ -886,7 +982,7 @@ function scrambleEl(el, dur){
   })();
 
   document.addEventListener('mouseover', e => {
-    root.classList.toggle('cur-hover', !!e.target.closest('a, .work, .app'));
+    root.classList.toggle('cur-hover', !!e.target.closest('a, button, .work, .app'));
   });
 })();
 
@@ -912,8 +1008,8 @@ function scrambleEl(el, dur){
 (function(){
   if(REDUCED) return;
   const worksSec = document.getElementById('works');
-  const dotEls = () => document.querySelectorAll('#dots circle');
-  const glyphEls = () => document.querySelectorAll('#glyphs text');
+  const dotEls = () => document.querySelectorAll('.viz-dots circle');
+  const glyphEls = () => document.querySelectorAll('.viz-glyphs text');
   const WORDS = ['dump','void','0x1F','rem','::','//','>>','err','mem','---','tx','&'];
   let timer = null;
 
@@ -934,6 +1030,196 @@ function scrambleEl(el, dur){
       else if(!e.isIntersecting && timer){ clearInterval(timer); timer = null; }
     });
   }, { threshold: 0.1 }).observe(worksSec);
+})();
+
+/* ================================================================
+   HERO SIGNATURE — 機械が論客の言葉を読み取る
+   セリフのタイトルをピクセル単位でサンプリングし、ポインタが触れた
+   箇所だけがモノスペースのグリフに崩壊して、離れると再構成される。
+   ロード直後に一度だけスキャンが自動走行する(タッチ端末にも保証)。
+================================================================ */
+(function(){
+  if(REDUCED) return;
+  const header = document.querySelector('header');
+  const h1 = document.querySelector('h1');
+  if(!header || !h1) return;
+
+  const PAD = 150, CELL = 7;
+  const CH = '01<>/*+-=#アイウエオカキクケコ';
+  let cv = null, cx, off, cells = [], W, H, R = 110, raf = null;
+  let px = -1e4, py = -1e4;      // ポインタ(キャンバス座標)
+  let sweep = null;              // イントロの自動スキャン
+
+  function build(){
+    const dpr = Math.min(2, devicePixelRatio || 1);
+    const hr = header.getBoundingClientRect();
+    const r = h1.getBoundingClientRect();
+    W = Math.ceil(r.width + PAD*2); H = Math.ceil(r.height + PAD*2);
+    R = Math.min(110, Math.max(48, r.height * .38)); // 崩壊半径はタイトルの規模に比例させる
+
+    if(!cv){
+      cv = document.createElement('canvas');
+      cv.className = 'h1-fx'; cv.setAttribute('aria-hidden','true');
+      header.appendChild(cv);
+    }
+    cv.style.left = (r.left - hr.left - PAD) + 'px';
+    cv.style.top  = (r.top  - hr.top  - PAD) + 'px';
+    cv.style.width = W + 'px'; cv.style.height = H + 'px';
+    cv.width = W * dpr; cv.height = H * dpr;
+    cx = cv.getContext('2d');
+    cx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    // オフスクリーンに DOM と同じ書体設定でタイトルを精密描画する
+    off = document.createElement('canvas');
+    off.width = W * dpr; off.height = H * dpr;
+    const oc = off.getContext('2d');
+    oc.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const cs = getComputedStyle(h1);
+    const fsz = parseFloat(cs.fontSize);
+    oc.font = `${cs.fontStyle} ${cs.fontWeight} ${fsz}px ${cs.fontFamily}`;
+    if('letterSpacing' in oc) oc.letterSpacing = cs.letterSpacing;
+    oc.textBaseline = 'alphabetic';
+    const m = oc.measureText('B');
+    const asc = m.fontBoundingBoxAscent || fsz * .76;
+    const dsc = m.fontBoundingBoxDescent || fsz * .24;
+    const lineH = fsz * .92;                       // CSS の line-height:.92 と一致させる
+    const half = (lineH - (asc + dsc)) / 2;
+    const b1 = PAD + half + asc, b2 = b1 + lineH;
+    oc.fillStyle = '#e8e6e1';
+    oc.fillText('BRAIN', PAD, b1);
+    oc.fillText('DUMPER', PAD, b2);
+    oc.fillStyle = '#ff2d1f';
+    oc.fillText('.', PAD + oc.measureText('DUMPER').width, b2);
+
+    // 字形の内側だけをセル化する
+    cells = [];
+    const data = oc.getImageData(0, 0, off.width, off.height).data;
+    for(let y = 0; y < H; y += CELL){
+      for(let x = 0; x < W; x += CELL){
+        const ix = (Math.min(off.height-1, ((y + CELL/2) * dpr) | 0) * off.width
+                 +  Math.min(off.width-1,  ((x + CELL/2) * dpr) | 0)) * 4;
+        if(data[ix + 3] > 120){
+          cells.push({ hx:x, hy:y, x, y, vx:0, vy:0,
+                       red: data[ix] > 200 && data[ix+1] < 110,
+                       ch: CH[Math.random()*CH.length|0] });
+        }
+      }
+    }
+    h1.classList.add('fx-on');
+    render();
+  }
+
+  function render(){
+    cx.clearRect(0, 0, W, H);
+    cx.drawImage(off, 0, 0, W, H);
+    cx.font = (CELL + 3) + 'px "IBM Plex Mono", monospace';
+    let sx = px, sy = py;
+    if(sweep){
+      const t = (performance.now() - sweep.t0) / 1300;
+      if(t >= 1){ sweep = null; sx = px; sy = py; }
+      else { sx = -60 + (W + 120) * t; sy = H * .52; }
+    }
+    let moving = !!sweep;
+    for(const c of cells){
+      const dx = c.hx - sx, dy = c.hy - sy, d2 = dx*dx + dy*dy;
+      if(d2 < R*R){
+        const d = Math.sqrt(d2) || 1, f = (1 - d/R) * 4.4;
+        c.vx += dx/d*f + (Math.random()-.5)*1.3;
+        c.vy += dy/d*f + (Math.random()-.5)*1.3 + .35;
+      }
+      c.vx *= .86; c.vy *= .86;
+      c.x += c.vx + (c.hx - c.x) * .09;
+      c.y += c.vy + (c.hy - c.y) * .09;
+      if(Math.abs(c.x - c.hx) + Math.abs(c.y - c.hy) > .7){
+        moving = true;
+        cx.fillStyle = '#0a0a0a';                       // 元の位置に空いた穴
+        cx.fillRect(c.hx - 1, c.hy - 1, CELL + 2, CELL + 2);
+        if(Math.random() < .04) c.ch = CH[Math.random()*CH.length|0];
+        cx.fillStyle = c.red ? 'rgba(255,45,31,.9)' : 'rgba(232,230,225,.85)';
+        cx.fillText(c.ch, c.x, c.y + CELL);             // 飛散したグリフ
+      }
+    }
+    return moving;
+  }
+
+  function loop(){
+    const inCanvas = px > -R && py > -R && px < W + R && py < H + R;
+    if(render() || inCanvas) raf = requestAnimationFrame(loop);
+    else { raf = null; render(); }
+  }
+  function kick(){ if(cv && !raf) raf = requestAnimationFrame(loop); }
+
+  header.addEventListener('pointermove', e => {
+    if(!cv) return;
+    const r = cv.getBoundingClientRect();
+    px = e.clientX - r.left; py = e.clientY - r.top;
+    kick();
+  });
+  header.addEventListener('pointerleave', () => { px = py = -1e4; kick(); });
+
+  let rsz;
+  addEventListener('resize', () => { clearTimeout(rsz); rsz = setTimeout(() => { if(cv) build(); }, 200); });
+
+  const ready = document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve();
+  ready.then(() => setTimeout(() => {
+    build();
+    setTimeout(() => { sweep = { t0: performance.now() }; kick(); }, 450);
+  }, 1750)); // ロード時の staggered reveal が終わってから引き継ぐ
+})();
+
+/* ================================================================
+   SND — オプトインのアンビエント(WebAudio 手書き合成、アセットゼロ)
+================================================================ */
+(function(){
+  const btn = document.getElementById('snd');
+  if(!btn) return;
+  let ctx = null, master = null, timer = null, on = false;
+
+  function boot(){
+    ctx = new (window.AudioContext || window.webkitAudioContext)();
+    master = ctx.createGain();
+    master.gain.value = 0;
+    master.connect(ctx.destination);
+    // ノイズフロア(ブラウンノイズ → ローパス)
+    const len = ctx.sampleRate * 2;
+    const buf = ctx.createBuffer(1, len, ctx.sampleRate);
+    const d = buf.getChannelData(0);
+    let last = 0;
+    for(let i = 0; i < len; i++){ const w = Math.random()*2 - 1; last = (last + .02*w) / 1.02; d[i] = last * 3.5; }
+    const src = ctx.createBufferSource(); src.buffer = buf; src.loop = true;
+    const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 240;
+    const g = ctx.createGain(); g.gain.value = .5;
+    src.connect(lp); lp.connect(g); g.connect(master);
+    src.start();
+  }
+  function blip(){
+    if(!ctx || Math.random() < .35) return;
+    const o = ctx.createOscillator(), g = ctx.createGain();
+    o.type = 'sine';
+    o.frequency.value = [660, 880, 1320, 1760][Math.random()*4|0];
+    g.gain.setValueAtTime(.0001, ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(.04, ctx.currentTime + .02);
+    g.gain.exponentialRampToValueAtTime(.0001, ctx.currentTime + .7);
+    o.connect(g); g.connect(master);
+    o.start(); o.stop(ctx.currentTime + .8);
+  }
+  btn.addEventListener('click', () => {
+    on = !on;
+    btn.classList.toggle('on', on);
+    btn.setAttribute('aria-pressed', on);
+    if(on){
+      if(!ctx) boot();
+      ctx.resume();
+      master.gain.cancelScheduledValues(ctx.currentTime);
+      master.gain.linearRampToValueAtTime(.07, ctx.currentTime + 1.2);
+      timer = setInterval(blip, 6000);
+    }else{
+      clearInterval(timer);
+      master.gain.cancelScheduledValues(ctx.currentTime);
+      master.gain.linearRampToValueAtTime(0, ctx.currentTime + .5);
+      setTimeout(() => ctx && ctx.suspend(), 650);
+    }
+  });
 })();
 
 /* ================================================================
